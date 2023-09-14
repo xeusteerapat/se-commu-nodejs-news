@@ -4,3 +4,4 @@
 - Load `.env` file
 - Stable `fetch` API
 - `watch` mode
+- `randomUUID` from `Crypto API`
