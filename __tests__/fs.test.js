@@ -6,5 +6,6 @@ mock.method(fs, 'readFile', async () => 'Hello World');
 
 test('synchronous passing test', async t => {
   // This test passes because it does not throw an exception.
-  assert.strictEqual(await fs.readFile('a.txt'), 'Hello World');
+  const fileContent = await fs.readFile('a.txt');
+  assert.strictEqual(fileContent, 'Hello World');
 });

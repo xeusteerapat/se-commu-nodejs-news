@@ -7,13 +7,17 @@
     "test": "node --test",
     "test:kata": "node --test --watch kata.js",
     "test:watch": "node --test --watch",
-    "dev": "node --env-file .env --watch index"
+    "dev": "node --env-file .env --watch server.js",
+    "server": "node --env-file .env --watch app.js | pino-pretty --colorize"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "lodash": "^4.17.21"
+    "fastify": "^4.23.2",
+    "jsonwebtoken": "9.0.0",
+    "lodash": "^4.17.21",
+    "pino-pretty": "^10.2.0"
   }
 }
