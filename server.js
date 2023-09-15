@@ -9,12 +9,7 @@ const DEFAULT_USER = {
 const JWT_KEY = 'abc123';
 
 async function loginRoute(request, reply) {
-  const { user, password } = request.body;
-
-  console.log('default', DEFAULT_USER.user);
-
-  console.log('check user', user);
-  console.log('check password', password);
+  const { user, password } = JSON.parse(request.body);
 
   if (user !== DEFAULT_USER.user || password !== DEFAULT_USER.password) {
     reply.statusCode = 401;
@@ -37,17 +32,17 @@ function isHeadersValid(headers) {
   }
 }
 
-async function loginHandler(request, response) {
+async function loginHandler(request, reply) {
   if (request.url === '/login' && request.method === 'POST') {
-    return loginRoute(request, response);
+    return loginRoute(request, reply);
   }
 
   if (!isHeadersValid(request.headers)) {
-    response.writeHead(400);
-    return response.end(JSON.stringify({ error: 'invalid token!' }));
+    reply.status = 400;
+    return reply.end(JSON.stringify({ error: 'invalid token!' }));
   }
 
-  response.end(JSON.stringify({ result: 'Hey welcome!' }));
+  reply.send({ result: 'Hey welcome!' });
 }
 
 function buildServer() {
@@ -56,6 +51,10 @@ function buildServer() {
   });
 
   server.post('/login', async function handler(request, reply) {
+    return loginHandler(request, reply);
+  });
+
+  server.get('/', async function handler(request, reply) {
     return loginHandler(request, reply);
   });
 
