@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import { strictEqual } from 'node:assert';
-import { accum } from '../kata.js';
+import { accum } from '../playground/kata.js';
 
 describe('Test with accum', () => {
   it('Test case 1', () => {
