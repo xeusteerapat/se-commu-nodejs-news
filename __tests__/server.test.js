@@ -5,7 +5,7 @@ import buildServer from '../server.js';
 
 const BASE_URL = 'http://localhost:3000';
 
-describe('API Workflow', t => {
+describe('API Workflow', (t) => {
   let _server = {};
   let _globalToken = '';
 
@@ -14,7 +14,7 @@ describe('API Workflow', t => {
     await _server.listen();
   });
 
-  after(done => _server.close(done));
+  after(() => _server.close());
 
   it('should receive not authorized given wrong user and password', async () => {
     const data = {
