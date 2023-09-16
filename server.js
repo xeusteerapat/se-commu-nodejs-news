@@ -9,7 +9,7 @@ const DEFAULT_USER = {
 const JWT_KEY = 'abc123';
 
 async function loginRoute(request, reply) {
-  const { user, password } = JSON.parse(request.body);
+  const { user, password } = request.body;
 
   if (user !== DEFAULT_USER.user || password !== DEFAULT_USER.password) {
     reply.statusCode = 401;
@@ -39,15 +39,15 @@ async function loginHandler(request, reply) {
 
   if (!isHeadersValid(request.headers)) {
     reply.status = 400;
-    return reply.end(JSON.stringify({ error: 'invalid token!' }));
+    return reply.send({ error: 'invalid token!' });
   }
 
   reply.send({ result: 'Hey welcome!' });
 }
 
-function buildServer() {
+function buildServer(env = 'DEV') {
   const server = Fastify({
-    logger: true,
+    logger: env === 'DEV' ? true : false,
   });
 
   server.post('/login', async function handler(request, reply) {

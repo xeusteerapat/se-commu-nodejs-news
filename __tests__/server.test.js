@@ -1,20 +1,19 @@
-// api.test.js
 import { describe, before, after, it } from 'node:test';
 import { deepStrictEqual, ok, strictEqual } from 'node:assert';
 import buildServer from '../server.js';
 
-const BASE_URL = 'http://localhost:3000';
-
-describe('API Workflow', (t) => {
-  let _server = {};
+describe('API Workflow', t => {
+  let _server;
   let _globalToken = '';
 
   before(async () => {
-    _server = buildServer();
-    await _server.listen();
+    _server = await buildServer('test');
   });
 
-  after(() => _server.close());
+  after(async () => {
+    await _server.close();
+    _server = null;
+  });
 
   it('should receive not authorized given wrong user and password', async () => {
     const data = {
@@ -22,14 +21,17 @@ describe('API Workflow', (t) => {
       password: 'wrongpassword',
     };
 
-    const request = await fetch(`${BASE_URL}/login`, {
+    const response = await _server.inject({
+      url: '/login',
       method: 'POST',
-      body: JSON.stringify(data),
+      payload: data,
     });
 
-    strictEqual(request.status, 401);
-    const response = await request.json();
-    deepStrictEqual(response, { error: 'invalid username!' });
+    strictEqual(response.statusCode, 401);
+
+    deepStrictEqual(JSON.parse(response.payload), {
+      error: 'invalid username!',
+    });
   });
 
   it('should login successfuly given user and password', async () => {
@@ -38,29 +40,29 @@ describe('API Workflow', (t) => {
       password: '1234',
     };
 
-    const request = await fetch(`${BASE_URL}/login`, {
+    const response = await _server.inject({
+      url: '/login',
       method: 'POST',
-      body: JSON.stringify(data),
+      payload: data,
     });
 
-    strictEqual(request.status, 200);
-    const response = await request.json();
+    strictEqual(response.statusCode, 200);
 
-    ok(response.token, 'token should be present');
-    _globalToken = response.token;
+    ok(JSON.parse(response.body), 'token should be present');
+    const { token } = response.json();
+    _globalToken = token;
   });
 
   it('should throw 404 Not Found Error', async () => {
-    const request = await fetch(`${BASE_URL}/xxx`, {
+    const response = await _server.inject({
+      url: '/xxx',
       method: 'POST',
-      headers: {
-        authorization: '',
-      },
+      payload: {},
     });
 
-    strictEqual(request.status, 404);
-    const response = await request.json();
-    deepStrictEqual(response, {
+    strictEqual(response.statusCode, 404);
+
+    deepStrictEqual(response.json(), {
       message: 'Route POST:/xxx not found',
       error: 'Not Found',
       statusCode: 404,
@@ -68,15 +70,16 @@ describe('API Workflow', (t) => {
   });
 
   it('should be allowed to access private data with a valid token', async () => {
-    const request = await fetch(`${BASE_URL}/`, {
+    const response = await _server.inject({
+      url: '/',
       method: 'GET',
       headers: {
         authorization: _globalToken,
       },
     });
 
-    strictEqual(request.status, 200);
-    const response = await request.json();
-    deepStrictEqual(response, { result: 'Hey welcome!' });
+    strictEqual(response.statusCode, 200);
+
+    deepStrictEqual(response.json(), { result: 'Hey welcome!' });
   });
 });
