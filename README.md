@@ -12,3 +12,4 @@
 - https://www.nearform.com/blog/writing-tests-with-fastify-and-node-test-runner/
 - https://blog.erickwendel.com.br/how-to-create-e2e-tests-in-nodejs-with-no-frameworks-step-by-step
 - https://www.youtube.com/watch?v=VPLSnRyWzE0
+- https://node.green
